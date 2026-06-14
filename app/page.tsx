@@ -5,12 +5,15 @@ import {
   getSectors,
   getSectorStats,
   getReports,
+  getMarketStats,
+  getMarketSummary,
 } from "@/lib/db";
 import { deriveAll } from "@/lib/metrics";
 import { getRowSortValue } from "@/lib/table-config";
 import type { CompanyRowData } from "@/lib/table-config";
 import type { SectorStat } from "@/lib/types";
 import CompanyTablePage from "@/app/_components/CompanyTablePage";
+import TopPageLayout from "@/app/_components/TopPageLayout";
 
 interface SearchParams {
   market?: string;
@@ -35,12 +38,15 @@ export default async function Home({
   const sortDir = sp.dir === "asc" ? "asc" : "desc";
 
   // Parallel data fetches
-  const [allCompanies, markets, allSectors, allSectorStats] = await Promise.all([
-    getCompanies({ sector: sectorFilter, activeOnly: true }),
-    getMarkets(),
-    getSectors(),
-    getSectorStats(),
-  ]);
+  const [allCompanies, markets, allSectors, allSectorStats, marketStats, marketSummary] =
+    await Promise.all([
+      getCompanies({ sector: sectorFilter, activeOnly: true }),
+      getMarkets(),
+      getSectors(),
+      getSectorStats(),
+      getMarketStats(),
+      getMarketSummary(),
+    ]);
 
   // Apply market filter
   const companies =
@@ -57,6 +63,8 @@ export default async function Home({
   // Sectors available in the current result set
   const usedSectorCodes = new Set(companies.map((c) => c.sector_code).filter(Boolean));
   const availableSectors = allSectors.filter((s) => usedSectorCodes.has(s.code));
+
+  const fiscalYear = 2024;
 
   // Fetch latest annual reports for each company (parallel)
   const reportArrays = await Promise.all(
@@ -111,7 +119,18 @@ export default async function Home({
       className="mx-auto px-4 md:px-6 py-8 md:py-12"
       style={{ maxWidth: 1280 }}
     >
-      {/* ── 第1層・第2層 placeholder (implemented in next STEP) ── */}
+      {/* ── 第1層・第2層: 市場ダッシュボード + 業界マップ ── */}
+      <Suspense fallback={<DashboardSkeleton />}>
+        <TopPageLayout
+          marketStats={marketStats}
+          marketSummary={marketSummary}
+          sectors={availableSectors}
+          sectorStats={allSectorStats}
+          selectedMarkets={marketFilter}
+          selectedSector={sectorFilter}
+          fiscalYear={fiscalYear}
+        />
+      </Suspense>
 
       {/* ── 第3層: 企業テーブル ─── */}
       <Suspense fallback={<TableSkeleton />}>
@@ -129,6 +148,17 @@ export default async function Home({
         />
       </Suspense>
     </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div
+      className="w-full skeleton mb-6"
+      style={{ height: 180, borderRadius: "var(--r-card)" }}
+      role="status"
+      aria-label="ダッシュボードを読み込み中"
+    />
   );
 }
 
