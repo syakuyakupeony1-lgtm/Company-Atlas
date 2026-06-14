@@ -1,0 +1,6 @@
+[
+  { "code": "prime",    "label_ja": "プライム",         "label_en": "Prime",    "sort_order": 1 },
+  { "code": "standard", "label_ja": "スタンダード",     "label_en": "Standard", "sort_order": 2 },
+  { "code": "growth",   "label_ja": "グロース",         "label_en": "Growth",   "sort_order": 3 },
+  { "code": "pro",      "label_ja": "TOKYO PRO Market", "label_en": "Pro",      "sort_order": 4 }
+]

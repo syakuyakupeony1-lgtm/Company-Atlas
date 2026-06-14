@@ -1,0 +1,17 @@
+[
+  { "id": "msumm-all-2022-rev",    "market_code": null, "fiscal_year": 2022, "metric": "revenue_up_ratio",  "value": 0.58, "sample_size": 3820, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2022-pft",    "market_code": null, "fiscal_year": 2022, "metric": "profit_up_ratio",   "value": 0.52, "sample_size": 3780, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2022-cnt",    "market_code": null, "fiscal_year": 2022, "metric": "listed_count",      "value": 3870, "sample_size": 3870, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "msumm-all-2023-rev",    "market_code": null, "fiscal_year": 2023, "metric": "revenue_up_ratio",  "value": 0.60, "sample_size": 3845, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2023-pft",    "market_code": null, "fiscal_year": 2023, "metric": "profit_up_ratio",   "value": 0.54, "sample_size": 3800, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2023-cnt",    "market_code": null, "fiscal_year": 2023, "metric": "listed_count",      "value": 3880, "sample_size": 3880, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "msumm-all-2024-rev",    "market_code": null, "fiscal_year": 2024, "metric": "revenue_up_ratio",  "value": 0.62, "sample_size": 3850, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2024-pft",    "market_code": null, "fiscal_year": 2024, "metric": "profit_up_ratio",   "value": 0.55, "sample_size": 3800, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-all-2024-cnt",    "market_code": null, "fiscal_year": 2024, "metric": "listed_count",      "value": 3900, "sample_size": 3900, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "msumm-prime-2024-rev",  "market_code": "prime", "fiscal_year": 2024, "metric": "revenue_up_ratio", "value": 0.65, "sample_size": 1650, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-prime-2024-pft",  "market_code": "prime", "fiscal_year": 2024, "metric": "profit_up_ratio",  "value": 0.58, "sample_size": 1620, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "msumm-prime-2024-cnt",  "market_code": "prime", "fiscal_year": 2024, "metric": "listed_count",     "value": 1650, "sample_size": 1650, "computed_at": "2024-01-01T00:00:00Z" }
+]

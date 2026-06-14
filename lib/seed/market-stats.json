@@ -1,0 +1,25 @@
+[
+  { "id": "ms-all-2022-op",  "market_code": null, "fiscal_year": 2022, "metric_key": "op_margin",    "median": 5.8, "mean": 6.4, "q1": 3.0, "q3": 10.5, "sample_size": 3820, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2022-roic","market_code": null, "fiscal_year": 2022, "metric_key": "roic",         "median": 6.0, "mean": 6.8, "q1": 2.8, "q3": 11.0, "sample_size": 3750, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2022-eq",  "market_code": null, "fiscal_year": 2022, "metric_key": "equity_ratio", "median": 47.5, "mean": 49.0, "q1": 32.0, "q3": 62.0, "sample_size": 3870, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ms-all-2023-op",  "market_code": null, "fiscal_year": 2023, "metric_key": "op_margin",    "median": 6.0, "mean": 6.6, "q1": 3.2, "q3": 10.8, "sample_size": 3845, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2023-roic","market_code": null, "fiscal_year": 2023, "metric_key": "roic",         "median": 6.2, "mean": 7.0, "q1": 2.9, "q3": 11.2, "sample_size": 3780, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2023-eq",  "market_code": null, "fiscal_year": 2023, "metric_key": "equity_ratio", "median": 47.8, "mean": 49.3, "q1": 32.5, "q3": 62.5, "sample_size": 3880, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ms-all-2024-op",  "market_code": null, "fiscal_year": 2024, "metric_key": "op_margin",    "median": 6.2, "mean": 6.8, "q1": 3.5, "q3": 11.0, "sample_size": 3850, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2024-roic","market_code": null, "fiscal_year": 2024, "metric_key": "roic",         "median": 6.5, "mean": 7.2, "q1": 3.0, "q3": 11.5, "sample_size": 3780, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-all-2024-eq",  "market_code": null, "fiscal_year": 2024, "metric_key": "equity_ratio", "median": 48.0, "mean": 49.5, "q1": 33.0, "q3": 63.0, "sample_size": 3900, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ms-prime-2022-op",  "market_code": "prime", "fiscal_year": 2022, "metric_key": "op_margin",    "median": 6.5, "mean": 7.3, "q1": 3.8, "q3": 12.0, "sample_size": 1650, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2022-roic","market_code": "prime", "fiscal_year": 2022, "metric_key": "roic",         "median": 7.0, "mean": 7.8, "q1": 3.5, "q3": 12.5, "sample_size": 1620, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2022-eq",  "market_code": "prime", "fiscal_year": 2022, "metric_key": "equity_ratio", "median": 48.5, "mean": 50.0, "q1": 34.0, "q3": 64.0, "sample_size": 1680, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ms-prime-2023-op",  "market_code": "prime", "fiscal_year": 2023, "metric_key": "op_margin",    "median": 6.8, "mean": 7.5, "q1": 4.0, "q3": 12.5, "sample_size": 1655, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2023-roic","market_code": "prime", "fiscal_year": 2023, "metric_key": "roic",         "median": 7.2, "mean": 8.0, "q1": 3.8, "q3": 13.0, "sample_size": 1625, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2023-eq",  "market_code": "prime", "fiscal_year": 2023, "metric_key": "equity_ratio", "median": 49.0, "mean": 50.5, "q1": 34.5, "q3": 64.5, "sample_size": 1685, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ms-prime-2024-op",  "market_code": "prime", "fiscal_year": 2024, "metric_key": "op_margin",    "median": 7.0, "mean": 7.8, "q1": 4.0, "q3": 12.5, "sample_size": 1650, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2024-roic","market_code": "prime", "fiscal_year": 2024, "metric_key": "roic",         "median": 7.5, "mean": 8.2, "q1": 4.0, "q3": 13.5, "sample_size": 1620, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ms-prime-2024-eq",  "market_code": "prime", "fiscal_year": 2024, "metric_key": "equity_ratio", "median": 49.5, "mean": 51.0, "q1": 35.0, "q3": 65.0, "sample_size": 1680, "computed_at": "2024-01-01T00:00:00Z" }
+]

@@ -1,0 +1,26 @@
+[
+  { "id": "ss-3050-2020-op",  "sector_code": "3050", "fiscal_year": 2020, "metric_key": "op_margin",    "median": 3.4, "q1": 1.8, "q3": 5.8, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2020-roic","sector_code": "3050", "fiscal_year": 2020, "metric_key": "roic",         "median": 3.8, "q1": 1.5, "q3": 6.5, "sample_size": 30, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2020-eq",  "sector_code": "3050", "fiscal_year": 2020, "metric_key": "equity_ratio", "median": 45.2, "q1": 36.0, "q3": 57.0, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2020-fcf", "sector_code": "3050", "fiscal_year": 2020, "metric_key": "fcf",          "median": 8500000000, "q1": 3000000000, "q3": 18000000000, "sample_size": 28, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ss-3050-2021-op",  "sector_code": "3050", "fiscal_year": 2021, "metric_key": "op_margin",    "median": 3.8, "q1": 2.0, "q3": 6.2, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2021-roic","sector_code": "3050", "fiscal_year": 2021, "metric_key": "roic",         "median": 4.2, "q1": 1.8, "q3": 7.0, "sample_size": 30, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2021-eq",  "sector_code": "3050", "fiscal_year": 2021, "metric_key": "equity_ratio", "median": 44.8, "q1": 35.5, "q3": 56.5, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2021-fcf", "sector_code": "3050", "fiscal_year": 2021, "metric_key": "fcf",          "median": 9200000000, "q1": 3500000000, "q3": 20000000000, "sample_size": 28, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ss-3050-2022-op",  "sector_code": "3050", "fiscal_year": 2022, "metric_key": "op_margin",    "median": 4.0, "q1": 2.2, "q3": 6.5, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2022-roic","sector_code": "3050", "fiscal_year": 2022, "metric_key": "roic",         "median": 4.5, "q1": 2.0, "q3": 7.2, "sample_size": 30, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2022-eq",  "sector_code": "3050", "fiscal_year": 2022, "metric_key": "equity_ratio", "median": 44.5, "q1": 35.0, "q3": 56.0, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2022-fcf", "sector_code": "3050", "fiscal_year": 2022, "metric_key": "fcf",          "median": 10500000000, "q1": 4000000000, "q3": 22000000000, "sample_size": 28, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ss-3050-2023-op",  "sector_code": "3050", "fiscal_year": 2023, "metric_key": "op_margin",    "median": 4.5, "q1": 2.5, "q3": 7.2, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2023-roic","sector_code": "3050", "fiscal_year": 2023, "metric_key": "roic",         "median": 5.0, "q1": 2.2, "q3": 7.8, "sample_size": 30, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2023-eq",  "sector_code": "3050", "fiscal_year": 2023, "metric_key": "equity_ratio", "median": 44.8, "q1": 35.2, "q3": 56.8, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2023-fcf", "sector_code": "3050", "fiscal_year": 2023, "metric_key": "fcf",          "median": 11000000000, "q1": 4500000000, "q3": 24000000000, "sample_size": 28, "computed_at": "2024-01-01T00:00:00Z" },
+
+  { "id": "ss-3050-2024-op",  "sector_code": "3050", "fiscal_year": 2024, "metric_key": "op_margin",    "median": 5.0, "q1": 2.8, "q3": 8.0, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2024-roic","sector_code": "3050", "fiscal_year": 2024, "metric_key": "roic",         "median": 5.5, "q1": 2.5, "q3": 8.5, "sample_size": 30, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2024-eq",  "sector_code": "3050", "fiscal_year": 2024, "metric_key": "equity_ratio", "median": 45.5, "q1": 36.0, "q3": 57.5, "sample_size": 32, "computed_at": "2024-01-01T00:00:00Z" },
+  { "id": "ss-3050-2024-fcf", "sector_code": "3050", "fiscal_year": 2024, "metric_key": "fcf",          "median": 12000000000, "q1": 5000000000, "q3": 26000000000, "sample_size": 28, "computed_at": "2024-01-01T00:00:00Z" }
+]
