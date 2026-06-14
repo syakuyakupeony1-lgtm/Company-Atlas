@@ -9,10 +9,11 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
+  ReferenceArea,
 } from "recharts";
 import { deriveAll } from "@/lib/metrics";
 import { formatBigNum } from "@/lib/metrics";
+import { computeBench } from "@/lib/sector-bench";
 import type { FinancialReport } from "@/lib/types";
 
 // ─── Metric definitions ───────────────────────────────────────
@@ -136,10 +137,21 @@ export function TrendChart({ reports }: TrendChartProps) {
     [reports, selected, indexed],
   );
 
+  // Historical range band: p25–p75 across all years for a single selected metric.
+  // Only shown in non-indexed mode when exactly one metric is selected.
+  const histRange = useMemo(() => {
+    if (indexed || selected.length !== 1) return null;
+    const key = selected[0];
+    const values = reports.map((r) => extractValue(r, key)).filter((v): v is number => v != null);
+    const bench = computeBench(values);
+    if (!bench) return null;
+    return { y1: bench.q1, y2: bench.q3, color: METRICS.find(m => m.key === key)?.color ?? "#888" };
+  }, [reports, selected, indexed]);
+
   function toggleMetric(key: string) {
     setSelected(prev =>
       prev.includes(key)
-        ? prev.length > 1 ? prev.filter(k => k !== key) : prev  // keep at least 1
+        ? prev.length > 1 ? prev.filter(k => k !== key) : prev
         : [...prev, key],
     );
   }
@@ -213,6 +225,11 @@ export function TrendChart({ reports }: TrendChartProps) {
           最初の期を100として各年の成長倍率を表示
         </p>
       )}
+      {histRange && !indexed && (
+        <p style={{ fontSize: "var(--text-caption)", color: "var(--ink-tertiary)", marginBottom: 8 }}>
+          帯は自社過去実績のQ1〜Q3レンジ
+        </p>
+      )}
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={280}>
@@ -240,6 +257,16 @@ export function TrendChart({ reports }: TrendChartProps) {
             content={<CustomTooltip indexed={indexed} reports={reports} />}
             cursor={{ stroke: "var(--hairline)", strokeWidth: 1 }}
           />
+          {/* Historical range band (Q1–Q3 of own data) */}
+          {histRange && (
+            <ReferenceArea
+              y1={histRange.y1}
+              y2={histRange.y2}
+              fill={histRange.color}
+              fillOpacity={0.07}
+              stroke="none"
+            />
+          )}
           {selected.map((key) => {
             const def = METRICS.find(m => m.key === key)!;
             return (

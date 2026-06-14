@@ -163,11 +163,47 @@ export async function getMarketSummary(filter: SummaryFilter = {}): Promise<Mark
   });
 }
 
-/** Returns AI insights for a company. Currently no seed data — returns empty. */
+// In-memory store for insights generated during the current process lifetime.
+// In Phase 2, this is replaced by a Supabase query.
+const insightStore: AiInsight[] = [];
+
+/** Returns AI insights for a company (from in-memory store populated by saveInsight). */
 export async function getInsights(companyId: string): Promise<AiInsight[]> {
-  // Seed has no ai_insights rows yet; populated by the batch AI generation step.
-  void companyId;
-  return [];
+  return insightStore.filter((i) => i.company_id === companyId);
+}
+
+interface SaveInsightInput {
+  company_id: string;
+  report_id?: string;
+  kind: string;
+  level: string;
+  content: Record<string, unknown>;
+  model?: string;
+}
+
+/** Persist a generated AI insight (in-memory for Phase 1; Supabase for Phase 2). */
+export async function saveInsight(input: SaveInsightInput): Promise<AiInsight> {
+  const insight: AiInsight = {
+    id: `insight-${input.company_id}-${input.kind}-${input.level}-${Date.now()}`,
+    company_id: input.company_id,
+    report_id: input.report_id,
+    kind: input.kind,
+    level: input.level,
+    content: input.content,
+    model: input.model,
+    generated_at: new Date().toISOString(),
+  };
+  // Upsert: remove existing same company+kind+level+report, then push
+  const idx = insightStore.findIndex(
+    (i) =>
+      i.company_id === input.company_id &&
+      i.kind === input.kind &&
+      i.level === input.level &&
+      i.report_id === input.report_id,
+  );
+  if (idx >= 0) insightStore[idx] = insight;
+  else insightStore.push(insight);
+  return insight;
 }
 
 // ─── Convenience helpers ──────────────────────────────────────

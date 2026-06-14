@@ -1,14 +1,19 @@
 /**
  * Inline sector benchmark badge — shows where a value sits within [q1, median, q3].
- * Reusable across the company table and sector page.
+ * Level-aware: easy shows label only, pro shows label + approximate percentile.
  */
+import { approximatePercentile } from "@/lib/sector-bench";
+import type { BenchResult } from "@/lib/sector-bench";
+
 interface RangeBadgeProps {
   value: number | null | undefined;
   q1?: number | null;
   median?: number | null;
   q3?: number | null;
-  /** Whether higher is better (true = default, false for e.g. cost ratios) */
-  higherIsBetter?: boolean;
+  /** Full bench result — enables percentile display in pro mode. */
+  bench?: BenchResult | null;
+  /** "easy" | "standard" | "pro" — controls label verbosity */
+  level?: string;
 }
 
 function getLabel(ratio: number): string {
@@ -23,16 +28,21 @@ export function RangeBadge({
   q1,
   median,
   q3,
+  bench,
+  level = "standard",
 }: RangeBadgeProps) {
-  if (value == null || q1 == null || q3 == null) return null;
+  // Use bench fields if individual q values not provided
+  const effectiveQ1     = q1     ?? bench?.q1     ?? null;
+  const effectiveMedian = median ?? bench?.median  ?? null;
+  const effectiveQ3     = q3     ?? bench?.q3     ?? null;
 
-  // Position within [q1, q3], clamped to [0, 1]
-  const range = q3 - q1;
-  const rawRatio = range > 0 ? (value - q1) / range : 0.5;
+  if (value == null || effectiveQ1 == null || effectiveQ3 == null) return null;
+
+  const range = effectiveQ3 - effectiveQ1;
+  const rawRatio = range > 0 ? (value - effectiveQ1) / range : 0.5;
   const ratio = Math.max(0, Math.min(1, rawRatio));
   const label = getLabel(ratio);
 
-  // Color of the dot
   const dotColor =
     ratio >= 0.75
       ? "var(--pos)"
@@ -42,10 +52,22 @@ export function RangeBadge({
 
   const dotPct = ratio * 100;
 
+  // For pro mode, show approximate percentile if bench is provided
+  const pctLabel =
+    level === "pro" && bench
+      ? `約${Math.round(approximatePercentile(value, bench))}%ile`
+      : null;
+
+  // For standard+, show sample size note when bench.sample_size < 5
+  const smallNote =
+    level !== "easy" && bench && bench.sample_size < 5
+      ? `n=${bench.sample_size}`
+      : null;
+
   return (
     <span
-      className="inline-flex items-center gap-1 ml-1.5"
-      aria-label={`業種内ポジション: ${label}`}
+      className="inline-flex items-center gap-1 ml-1.5 flex-wrap"
+      aria-label={`業種内ポジション: ${label}${pctLabel ? ` (${pctLabel})` : ""}`}
     >
       {/* Thin range bar */}
       <span
@@ -54,11 +76,11 @@ export function RangeBadge({
         aria-hidden="true"
       >
         {/* Median tick */}
-        {median != null && (
+        {effectiveMedian != null && (
           <span
             className="absolute top-0 bottom-0"
             style={{
-              left: `${Math.max(0, Math.min(100, ((median - q1) / (range || 1)) * 100))}%`,
+              left: `${Math.max(0, Math.min(100, ((effectiveMedian - effectiveQ1) / (range || 1)) * 100))}%`,
               width: 1,
               background: "var(--hairline)",
               transform: "translateX(-50%)",
@@ -79,6 +101,7 @@ export function RangeBadge({
           }}
         />
       </span>
+
       {/* Label */}
       <span
         style={{
@@ -90,6 +113,20 @@ export function RangeBadge({
       >
         {label}
       </span>
+
+      {/* Pro percentile */}
+      {pctLabel && (
+        <span style={{ fontSize: "var(--text-caption)", color: "var(--ink-tertiary)", whiteSpace: "nowrap" }}>
+          {pctLabel}
+        </span>
+      )}
+
+      {/* Small-sample note */}
+      {smallNote && (
+        <span style={{ fontSize: 9, color: "var(--ink-tertiary)", whiteSpace: "nowrap" }}>
+          ({smallNote})
+        </span>
+      )}
     </span>
   );
 }
