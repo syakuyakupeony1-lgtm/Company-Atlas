@@ -1,8 +1,10 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 export type Level = "easy" | "standard" | "pro";
+
+const LEVEL_STORAGE_KEY = "company-atlas-level";
 
 interface LevelContextValue {
   level: Level;
@@ -10,7 +12,7 @@ interface LevelContextValue {
 }
 
 const LevelContext = createContext<LevelContextValue>({
-  level: "standard",
+  level: "easy",
   setLevel: () => {},
 });
 
@@ -19,7 +21,28 @@ export function useLevelContext() {
 }
 
 export function LevelProvider({ children }: { children: React.ReactNode }) {
-  const [level, setLevel] = useState<Level>("standard");
+  const [level, setLevelState] = useState<Level>("easy");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LEVEL_STORAGE_KEY) as Level | null;
+      if (stored === "easy" || stored === "standard" || stored === "pro") {
+        setLevelState(stored);
+      }
+    } catch {
+      // localStorage unavailable in this context
+    }
+  }, []);
+
+  function setLevel(l: Level) {
+    setLevelState(l);
+    try {
+      localStorage.setItem(LEVEL_STORAGE_KEY, l);
+    } catch {
+      // ignore
+    }
+  }
+
   return (
     <LevelContext.Provider value={{ level, setLevel }}>
       {children}

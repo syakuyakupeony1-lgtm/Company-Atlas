@@ -169,6 +169,7 @@ body {
 
 .expose {
   animation: exposure 240ms var(--ease) both;
+  animation-delay: calc(var(--stagger, 0) * 160ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
