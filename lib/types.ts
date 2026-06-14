@@ -140,3 +140,29 @@ export interface DerivedMetrics {
   roic?: number | null;
   equity_ratio?: number | null;
 }
+
+export interface WatchlistItem {
+  id: string;
+  watchlist_id: string;
+  company_id: string;
+  note?: string | null;
+  added_at: string;
+  company?: Company;
+}
+
+export interface Watchlist {
+  id: string;
+  user_id: string;
+  name: string;
+  created_at: string;
+  items?: WatchlistItem[];
+}
+
+export interface SavedView {
+  id: string;
+  user_id: string;
+  name: string;
+  columns: string[];   // ordered column keys
+  sort_key?: string | null;
+  created_at: string;
+}

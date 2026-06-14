@@ -25,6 +25,10 @@ import { TimelineCard } from "@/components/company/TimelineCard";
 import { KeyPointsCard } from "@/components/company/KeyPointsCard";
 import { RelatedCompanies } from "@/components/company/RelatedCompanies";
 import { CompanyCard } from "@/components/company/CompanyCard";
+import { AddToCompareButton } from "@/components/compare/AddToCompareButton";
+import { WatchlistButton } from "@/components/watchlist/WatchlistButton";
+import { createServerClient } from "@/lib/supabase/server";
+import { getWatchlist } from "@/lib/db";
 
 interface CompanyPageProps {
   params: Promise<{ ticker: string }>;
@@ -52,6 +56,24 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
 
   const company = await getCompany(ticker);
   if (!company) notFound();
+
+  // Check auth for watchlist state
+  let userId: string | null = null;
+  let isWatched = false;
+  try {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      const supabase = await createServerClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    }
+  } catch {
+    // seed mode — no auth
+  }
+  if (userId) {
+    const watchlist = await getWatchlist(userId);
+    const items = watchlist?.items ?? [];
+    isWatched = items.some((item) => item.company_id === company.id);
+  }
 
   // Parallel fetches
   const [allReports, sectors, markets, sectorStats, sectorPeers, insights] = await Promise.all([
@@ -154,6 +176,16 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
       {latestReport && (
         <FreshnessHeader report={latestReport} fiscalMonth={company.fiscal_month} />
       )}
+
+      {/* Company action buttons */}
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <WatchlistButton
+          companyId={company.id}
+          companyName={company.name}
+          isWatched={isWatched}
+        />
+        <AddToCompareButton company={company} variant="chip" />
+      </div>
 
       {/* ① Snapshot */}
       <SnapshotCard

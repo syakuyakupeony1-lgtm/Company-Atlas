@@ -6,6 +6,8 @@ import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LevelProvider } from "@/components/ui/LevelSwitcher";
 import { CompareProvider } from "@/lib/compare-store";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { CompareTray } from "@/components/compare/CompareTray";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto",
@@ -46,15 +48,18 @@ export default function RootLayout({
         className="min-h-full flex flex-col"
         style={{ fontFamily: "var(--font-noto), 'Noto Sans JP', sans-serif" }}
       >
-        <CompareProvider>
-          <LevelProvider>
-            <ToastProvider>
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </ToastProvider>
-          </LevelProvider>
-        </CompareProvider>
+        <AuthProvider>
+          <CompareProvider>
+            <LevelProvider>
+              <ToastProvider>
+                <Header />
+                <main className="flex-1" style={{ paddingBottom: "var(--tray-h, 0px)" }}>{children}</main>
+                <Footer />
+                <CompareTray />
+              </ToastProvider>
+            </LevelProvider>
+          </CompareProvider>
+        </AuthProvider>
       </body>
     </html>
   );

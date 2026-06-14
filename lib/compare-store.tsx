@@ -37,6 +37,21 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore
     }
+
+    // Listen for undo-readd events from the tray
+    const handler = (e: Event) => {
+      const company = (e as CustomEvent<Company>).detail;
+      if (company) {
+        setCompared((prev) => {
+          if (prev.length >= MAX_COMPARE || prev.some((x) => x.id === company.id)) return prev;
+          const next = [...prev, company];
+          try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+          return next;
+        });
+      }
+    };
+    window.addEventListener("compare:readd", handler);
+    return () => window.removeEventListener("compare:readd", handler);
   }, []);
 
   const persist = useCallback((next: Company[]) => {

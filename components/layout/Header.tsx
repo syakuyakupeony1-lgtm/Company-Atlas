@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { SearchBox } from "@/components/ui/SearchBox";
 import { LevelSwitcher } from "@/components/ui/LevelSwitcher";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,6 +53,7 @@ export function Header() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <LevelSwitcher />
           <WatchlistButton />
+          <AuthButton />
         </div>
       </div>
 
