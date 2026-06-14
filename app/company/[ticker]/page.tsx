@@ -11,6 +11,9 @@ import { deriveAll } from "@/lib/metrics";
 import { Breadcrumb } from "@/components/company/Breadcrumb";
 import { FreshnessHeader } from "@/components/company/FreshnessHeader";
 import { SnapshotCard } from "@/components/company/SnapshotCard";
+import { BusinessMixCard } from "@/components/company/BusinessMixCard";
+import { PLCard } from "@/components/company/PLCard";
+import { BSCard } from "@/components/company/BSCard";
 import { CompanyCard } from "@/components/company/CompanyCard";
 
 interface CompanyPageProps {
@@ -27,17 +30,14 @@ export async function generateMetadata({ params }: CompanyPageProps): Promise<Me
   };
 }
 
-// Placeholder cards stacked below Snapshot — populated in future STEPs
+// Cards not yet implemented — shown as placeholders
 const UPCOMING_CARDS = [
-  { key: "business-mix",  title: "事業構成" },
-  { key: "pl",            title: "損益計算書（PL）" },
-  { key: "bs",            title: "貸借対照表（BS）" },
-  { key: "cf",            title: "キャッシュフロー（CF）" },
-  { key: "shareholder",   title: "株主還元" },
-  { key: "timeline",      title: "業績タイムライン" },
-  { key: "related",       title: "関連企業" },
-  { key: "earnings",      title: "業績予想" },
-  { key: "discussion",    title: "論点" },
+  { key: "cf",         title: "キャッシュフロー（CF）" },
+  { key: "shareholder",title: "株主還元" },
+  { key: "timeline",   title: "業績タイムライン" },
+  { key: "related",    title: "関連企業" },
+  { key: "earnings",   title: "業績予想" },
+  { key: "discussion", title: "論点" },
 ];
 
 export default async function CompanyPage({ params }: CompanyPageProps) {
@@ -104,12 +104,27 @@ export default async function CompanyPage({ params }: CompanyPageProps) {
         staggerIndex={0}
       />
 
+      {/* ── ② Business Mix ────────────────────────────────── */}
+      {latestReport && (
+        <BusinessMixCard report={latestReport} staggerIndex={1} />
+      )}
+
+      {/* ── ③ PL X-Ray ────────────────────────────────────── */}
+      {latestReport && (
+        <PLCard report={latestReport} staggerIndex={2} />
+      )}
+
+      {/* ── ④ BS X-Ray ────────────────────────────────────── */}
+      {latestReport && (
+        <BSCard report={latestReport} staggerIndex={3} />
+      )}
+
       {/* ── Upcoming cards (placeholders) ─────────────────── */}
       {UPCOMING_CARDS.map((card, i) => (
         <CompanyCard
           key={card.key}
           title={card.title}
-          staggerIndex={i + 1}
+          staggerIndex={i + 4}
           status="coming_soon"
         />
       ))}
