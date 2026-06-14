@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LevelProvider } from "@/components/ui/LevelSwitcher";
+import { CompareProvider } from "@/lib/compare-store";
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto",
@@ -45,13 +46,15 @@ export default function RootLayout({
         className="min-h-full flex flex-col"
         style={{ fontFamily: "var(--font-noto), 'Noto Sans JP', sans-serif" }}
       >
-        <LevelProvider>
-          <ToastProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </ToastProvider>
-        </LevelProvider>
+        <CompareProvider>
+          <LevelProvider>
+            <ToastProvider>
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </ToastProvider>
+          </LevelProvider>
+        </CompareProvider>
       </body>
     </html>
   );

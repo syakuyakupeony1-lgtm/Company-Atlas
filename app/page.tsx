@@ -1,105 +1,147 @@
-export default function Home() {
+import { Suspense } from "react";
+import {
+  getCompanies,
+  getMarkets,
+  getSectors,
+  getSectorStats,
+  getReports,
+} from "@/lib/db";
+import { deriveAll } from "@/lib/metrics";
+import { getRowSortValue } from "@/lib/table-config";
+import type { CompanyRowData } from "@/lib/table-config";
+import type { SectorStat } from "@/lib/types";
+import CompanyTablePage from "@/app/_components/CompanyTablePage";
+
+interface SearchParams {
+  market?: string;
+  sector?: string;
+  sort?: string;
+  dir?: string;
+  preset?: string;
+  cols?: string;
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const sp = await searchParams;
+
+  // Parse URL params
+  const marketFilter = sp.market ? sp.market.split(",").filter(Boolean) : [];
+  const sectorFilter = sp.sector || undefined;
+  const sortKey = sp.sort || undefined;
+  const sortDir = sp.dir === "asc" ? "asc" : "desc";
+
+  // Parallel data fetches
+  const [allCompanies, markets, allSectors, allSectorStats] = await Promise.all([
+    getCompanies({ sector: sectorFilter, activeOnly: true }),
+    getMarkets(),
+    getSectors(),
+    getSectorStats(),
+  ]);
+
+  // Apply market filter
+  const companies =
+    marketFilter.length > 0
+      ? allCompanies.filter((c) => marketFilter.includes(c.market_code ?? ""))
+      : allCompanies;
+
+  // Build sector-stats lookup: `${sector_code}_${fiscal_year}_${metric_key}` → SectorStat
+  const benchIndex = new Map<string, SectorStat>();
+  for (const s of allSectorStats) {
+    benchIndex.set(`${s.sector_code}_${s.fiscal_year}_${s.metric_key}`, s);
+  }
+
+  // Sectors available in the current result set
+  const usedSectorCodes = new Set(companies.map((c) => c.sector_code).filter(Boolean));
+  const availableSectors = allSectors.filter((s) => usedSectorCodes.has(s.code));
+
+  // Fetch latest annual reports for each company (parallel)
+  const reportArrays = await Promise.all(
+    companies.map((c) => getReports(c.id, { periodType: "FY", limit: 1 })),
+  );
+
+  // Assemble rows
+  let rows: CompanyRowData[] = companies.map((company, i) => {
+    const latestReport = reportArrays[i][0];
+    const derived = latestReport ? deriveAll(latestReport) : {};
+    const fy = latestReport?.fiscal_year ?? 2024;
+    const sc = company.sector_code ?? "";
+
+    const sectorBench: Record<string, SectorStat> = {};
+    for (const metricKey of [
+      "net_sales",
+      "operating_income",
+      "op_margin",
+      "roic",
+      "equity_ratio",
+      "fcf",
+    ]) {
+      const stat = benchIndex.get(`${sc}_${fy}_${metricKey}`);
+      if (stat) sectorBench[metricKey] = stat;
+    }
+
+    return {
+      company,
+      market: markets.find((m) => m.code === company.market_code),
+      sector: allSectors.find((s) => s.code === company.sector_code),
+      latestReport,
+      derived,
+      sectorBench,
+    };
+  });
+
+  // Server-side sort
+  if (sortKey) {
+    rows = rows.sort((a, b) => {
+      const av = getRowSortValue(a, sortKey);
+      const bv = getRowSortValue(b, sortKey);
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      const cmp = av - bv;
+      return sortDir === "desc" ? -cmp : cmp;
+    });
+  }
+
   return (
     <div
-      className="flex-1 flex flex-col"
-      style={{ minHeight: "calc(100vh - 56px - 1px)" }}
+      className="mx-auto px-4 md:px-6 py-8 md:py-12"
+      style={{ maxWidth: 1280 }}
     >
-      {/* Hero area — sparse, generous */}
-      <section
-        className="flex flex-col items-center justify-center flex-1 px-4 py-24 md:py-40 text-center expose"
-        style={{ animationDelay: "0ms" }}
-      >
-        <p
-          className="mb-4"
-          style={{
-            fontSize: "var(--text-label)",
-            color: "var(--ink-tertiary)",
-            fontFamily: "var(--font-inter), Inter, sans-serif",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
-          Company Atlas
-        </p>
-        <h1
-          className="heading-ja"
-          style={{
-            fontSize: "clamp(28px, 5vw, 44px)",
-            color: "var(--ink)",
-            lineHeight: 1.2,
-            maxWidth: 560,
-          }}
-        >
-          企業を、数字の構造で
-          <br />
-          <span style={{ color: "var(--ink-secondary)" }}>理解する。</span>
-        </h1>
-        <p
-          className="mt-6"
-          style={{
-            fontSize: "var(--text-body)",
-            color: "var(--ink-secondary)",
-            maxWidth: 400,
-            lineHeight: 1.7,
-          }}
-        >
-          EDINET の財務データを X-Ray のように可視化する
-          <br className="hidden sm:block" />
-          企業理解 OS。気になる会社を検索、または業界から探す。
-        </p>
-      </section>
+      {/* ── 第1層・第2層 placeholder (implemented in next STEP) ── */}
 
-      {/* Placeholder sections — populated in subsequent steps */}
-      <section
-        className="px-4 md:px-6 pb-16 expose"
-        style={{ maxWidth: 1280, margin: "0 auto", width: "100%", animationDelay: "80ms" }}
-      >
-        <div
-          className="grid gap-4"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}
-        >
-          {[
-            { label: "市場ダッシュボード", sub: "全上場企業の体温を掴む" },
-            { label: "業界マップ",         sub: "33業種の数値感を一覧" },
-            { label: "企業テーブル",       sub: "絞り込み・並び替え・比較" },
-          ].map((item, i) => (
-            <div
-              key={item.label}
-              className="card expose"
-              style={{
-                animationDelay: `${160 + i * 80}ms`,
-                opacity: 0.6,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                minHeight: 120,
-                justifyContent: "center",
-              }}
-            >
-              <p
-                className="heading-ja"
-                style={{ fontSize: "var(--text-h2)", color: "var(--ink)" }}
-              >
-                {item.label}
-              </p>
-              <p
-                style={{ fontSize: "var(--text-label)", color: "var(--ink-secondary)" }}
-              >
-                {item.sub}
-              </p>
-              <p
-                style={{
-                  fontSize: "var(--text-caption)",
-                  color: "var(--ink-tertiary)",
-                  marginTop: 4,
-                }}
-              >
-                — 次のSTEPで実装
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* ── 第3層: 企業テーブル ─── */}
+      <Suspense fallback={<TableSkeleton />}>
+        <CompanyTablePage
+          rows={rows}
+          markets={markets}
+          availableSectors={availableSectors}
+          totalCount={rows.length}
+          initialMarkets={marketFilter}
+          initialSector={sectorFilter}
+          initialSort={sortKey}
+          initialDir={sp.dir}
+          initialPreset={sp.preset}
+          initialCols={sp.cols}
+        />
+      </Suspense>
     </div>
+  );
+}
+
+function TableSkeleton() {
+  return (
+    <div
+      className="w-full skeleton"
+      style={{
+        height: 400,
+        borderRadius: "var(--r-card)",
+      }}
+      role="status"
+      aria-label="テーブルを読み込み中"
+    />
   );
 }
