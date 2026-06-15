@@ -104,23 +104,32 @@ interface FinancialRow {
 
 // ─── EDINET API ────────────────────────────────────────────────────
 
-/** 指定日に提出された書類一覧を取得 (type=2: 有価証券報告書) */
+/** 指定日に提出された書類一覧を取得し、有価証券報告書のみ返す */
 async function fetchDocList(date: string): Promise<EdinetDoc[]> {
+  // type=2: メタデータのみ（全書類）
   const url = `${BASE_URL}/documents.json?date=${date}&type=2&Subscription-Key=${EDINET_KEY}`;
   const res = await fetch(url);
   if (!res.ok) return [];
   const json = await res.json() as { results?: EdinetDoc[] };
-  return json.results ?? [];
+  const all = json.results ?? [];
+
+  // 有価証券報告書のみに絞る（ordinanceCode=010, formCode=030000）
+  // 参考: https://qiita.com/XBRLJapan/items/27e623b8ca871740f352
+  return all.filter(
+    (d) => d.ordinanceCode === "010" && d.formCode === "030000"
+  );
 }
 
 interface EdinetDoc {
   docID: string;
   edinetCode: string;
+  secCode: string | null;  // 証券コード（ticker 相当、末尾に "0" が付く場合あり）
   filerName: string;
-  periodEnd: string;       // "YYYY-MM-DD"
-  docTypeCode: string;     // "120" = 有価証券報告書
+  periodEnd: string;        // "YYYY-MM-DD"
+  ordinanceCode: string;    // "010" = 有価証券報告書
+  formCode: string;         // "030000" = 有価証券報告書
   submitDateTime: string;
-  isConsolidated?: string; // "1" = 連結あり
+  isConsolidated?: string;  // "1" = 連結あり
 }
 
 /** XBRL ZIP をダウンロードして解凍、XML を返す */
@@ -202,32 +211,22 @@ async function main() {
 
   // Supabase から ticker → company_id マッピングを取得
   const { data: companies } = await db.from("companies").select("id, ticker");
-  const tickerMap = new Map<string, string>(
+  // secCode の末尾 "0" を除いた4桁 = ticker として対応
+  const tickerToId = new Map<string, string>(
     (companies ?? []).map((c: { ticker: string; id: string }) => [c.ticker, c.id])
   );
-
-  // EDINET のfilinName → ticker のマッピングは直接ないため
-  // edinetCode から ticker を探す補助テーブルが理想だが、
-  // ここでは filerName を使った簡易マッチング
-  const nameToId = new Map<string, string>(
-    (companies ?? []).map((c: { ticker: string; id: string }) => {
-      // ticker 4桁をキーとしても持たせる（書類内に記載される場合）
-      return [c.ticker, c.id];
-    })
-  );
-  void tickerMap; // 後で使用
 
   let processed = 0;
   let inserted  = 0;
 
   for (const date of days) {
     const docs = await fetchDocList(date);
-    const annualReports = docs.filter((d) => d.docTypeCode === "120");
+    const annualReports = docs; // fetchDocList で有価証券報告書に絞り済み
 
     for (const doc of annualReports) {
       // 会社を特定（EDINETコードと社名から）
       // より正確には edinet_code カラムを companies テーブルに追加するのが理想
-      const companyId = findCompanyId(doc, nameToId);
+      const companyId = findCompanyId(doc, tickerToId);
       if (!companyId) continue;
 
       const xml = await fetchXbrl(doc.docID);
@@ -283,12 +282,14 @@ function generateDateRange(days: number): string[] {
 
 function findCompanyId(
   doc: EdinetDoc,
-  nameToId: Map<string, string>,
+  tickerToId: Map<string, string>,
 ): string | null {
-  // edinetCode の末尾 → ticker の近似（"E00001" → 不一致なので filerName で探す）
-  // 理想的には companies テーブルに edinet_code カラムを追加する
-  for (const [key, id] of nameToId) {
-    if (doc.filerName?.includes(key)) return id;
+  // secCode は "13010" のように ticker4桁 + "0" の形式
+  // 末尾の "0" を除いた4桁が ticker に対応する
+  if (doc.secCode) {
+    const ticker = doc.secCode.replace(/0$/, "").padStart(4, "0");
+    const id = tickerToId.get(ticker);
+    if (id) return id;
   }
   return null;
 }
