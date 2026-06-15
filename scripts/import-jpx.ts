@@ -9,6 +9,10 @@
  *   NEXT_PUBLIC_SUPABASE_ANON_KEY  (or SUPABASE_SERVICE_ROLE_KEY for bulk insert)
  */
 
+import { config } from "dotenv";
+import { resolve } from "path";
+config({ path: resolve(process.cwd(), ".env.local") });
+
 import { createClient } from "@supabase/supabase-js";
 import * as XLSX from "xlsx";
 
@@ -58,7 +62,13 @@ function toMarketCode(raw: string): string | null {
 async function main() {
   console.log("⬇️  JPX データをダウンロード中...");
 
-  const res = await fetch(JPX_URL);
+  const res = await fetch(JPX_URL, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Referer": "https://www.jpx.co.jp/markets/statistics-equities/misc/01.html",
+      "Accept": "application/vnd.ms-excel,*/*",
+    },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}: ${JPX_URL}`);
 
   const buf = await res.arrayBuffer();
