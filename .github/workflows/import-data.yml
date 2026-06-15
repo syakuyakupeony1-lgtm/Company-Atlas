@@ -1,0 +1,52 @@
+name: 財務データ自動投入
+
+on:
+  # 毎営業日 午前9時（JST）に自動実行 = UTC 0時
+  schedule:
+    - cron: '0 0 * * 1-5'
+
+  # 手動実行ボタンでも起動可能
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '実行モード'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both       # JPX + EDINET 両方
+          - jpx        # JPX企業マスターのみ
+          - edinet     # EDINET財務データのみ
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js をセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 依存パッケージをインストール
+        run: npm ci
+
+      - name: JPX 上場企業マスター投入
+        if: ${{ github.event_name == 'schedule' || inputs.mode == 'both' || inputs.mode == 'jpx' }}
+        run: npx tsx scripts/import-jpx.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: EDINET 財務データ投入
+        if: ${{ github.event_name == 'schedule' || inputs.mode == 'both' || inputs.mode == 'edinet' }}
+        run: npx tsx scripts/import-edinet.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EDINET_API_KEY: ${{ secrets.EDINET_API_KEY }}
